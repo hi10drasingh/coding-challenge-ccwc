@@ -14,6 +14,11 @@ func Process(filePath string, options map[string]bool) {
 	case options["-c"]:
 		byteCount := CountBytes(input)
 		println(byteCount)
+
+	case options["-l"]:
+		lineCount := CountLines(input)
+		println(lineCount)
+
 	default:
 		println("No valid option provided.")
 	}
@@ -21,4 +26,20 @@ func Process(filePath string, options map[string]bool) {
 
 func CountBytes(input string) int {
 	return len(input)
+}
+
+func CountLines(input string) int {
+	count := 0
+	for _, char := range input {
+		if char == '\n' {
+			count++
+		}
+	}
+
+	// If the input is not empty and does not end with a newline, count the last line
+	if len(input) > 0 && input[len(input)-1] != '\n' {
+		count++
+	}
+
+	return count
 }

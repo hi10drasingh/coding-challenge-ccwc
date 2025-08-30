@@ -13,7 +13,7 @@ func TestProcess(t *testing.T) {
 	}
 	defer os.Remove(tmpFile.Name()) // Clean up
 
-	content := "Hello, World!"
+	content := "Hello, World!\nThis is a test file.\n"
 	if _, err := tmpFile.WriteString(content); err != nil {
 		t.Fatalf("Failed to write to temp file: %v", err)
 	}
@@ -24,6 +24,7 @@ func TestProcess(t *testing.T) {
 		options map[string]bool
 	}{
 		{"count bytes", map[string]bool{"-c": true}},
+		{"count lines", map[string]bool{"-l": true}},
 		{"no options", map[string]bool{}},
 	}
 
@@ -53,6 +54,30 @@ func TestCountBytes(t *testing.T) {
 			got := CountBytes(tt.input)
 			if got != tt.want {
 				t.Errorf("CountBytes(%q) = %d; want %d", tt.input, got, tt.want)
+			}
+		})
+	}
+}
+
+func TestCountLines(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+		want  int
+	}{
+		{"multiple lines", "Hello\nWorld\nThis is a test.", 3},
+		{"single line", "Hello, World!", 1},
+		{"empty string", "", 0},
+		{"empty line", "\n", 1},
+		{"trailing newline", "Hello, World!\n", 1},
+		{"only newlines", "\n\n\n", 3},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := CountLines(tt.input)
+			if got != tt.want {
+				t.Errorf("CountLines(%q) = %d; want %d", tt.input, got, tt.want)
 			}
 		})
 	}
