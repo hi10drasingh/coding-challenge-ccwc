@@ -1,40 +1,34 @@
 package service
 
 import (
-	"os"
 	"testing"
 )
 
 func TestProcess(t *testing.T) {
-	// Since Process function reads from a file, we will create a temporary file for testing
-	tmpFile, err := os.CreateTemp("", "testfile")
-	if err != nil {
-		t.Fatalf("Failed to create temp file: %v", err)
-	}
-	defer os.Remove(tmpFile.Name()) // Clean up
-
-	content := "Hello, World!\nThis is a test file.\n"
-	if _, err := tmpFile.WriteString(content); err != nil {
-		t.Fatalf("Failed to write to temp file: %v", err)
-	}
-	tmpFile.Close()
-
+	content := []byte("Hello, World!\nThis is a test file.\n")
 	tests := []struct {
 		name    string
 		options Options
+		output  Results
 	}{
-		{"count bytes", Options{CountBytes: true}},
-		{"count lines", Options{CountLines: true}},
-		{"count words", Options{CountWords: true}},
-		{"count characters", Options{CountCharacters: true}},
-		{"no options", Options{}},
+		{"count bytes", Options{CountBytes: true}, Results{Bytes: 35}},
+		{"count lines", Options{CountLines: true}, Results{Lines: 2}},
+		{"count words", Options{CountWords: true}, Results{Words: 7}},
+		{"count characters", Options{CountCharacters: true}, Results{Characters: 35}},
+		{"count all", Options{}, Results{
+			Bytes:      35,
+			Lines:      2,
+			Words:      7,
+			Characters: 35,
+		}},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			Process(tmpFile.Name(), tt.options)
-			// Note: In a real test, we would capture stdout and verify the output.
-			// For simplicity, we are just ensuring no panic occurs.
+			got := Process(content, tt.options)
+			if got != tt.output {
+				t.Errorf("Process() = %v; want %v", got, tt.output)
+			}
 		})
 	}
 }

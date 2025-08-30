@@ -1,7 +1,6 @@
 package service
 
 import (
-	"os"
 	"unicode"
 )
 
@@ -12,36 +11,35 @@ type Options struct {
 	CountCharacters bool
 }
 
-func Process(filePath string, options Options) {
-	data, err := os.ReadFile(filePath)
-	if err != nil {
-		panic(err)
-	}
+type Results struct {
+	Bytes      int
+	Lines      int
+	Words      int
+	Characters int
+}
 
-	input := string(data)
-
+func Process(bytes []byte, options Options) Results {
+	input := string(bytes)
 	switch {
 	case options.CountBytes:
-		byteCount := CountBytes(input)
-		println(byteCount)
+		return Results{Bytes: CountBytes(input)}
 
 	case options.CountLines:
-		lineCount := CountLines(input)
-		println(lineCount)
+		return Results{Lines: CountLines(input)}
 
 	case options.CountWords:
-		wordCount := CountWords(input)
-		println(wordCount)
+		return Results{Words: CountWords(input)}
 
 	case options.CountCharacters:
-		charCount := CountCharacters(input)
-		println(charCount)
+		return Results{Characters: CountCharacters(input)}
 
 	default:
-		byteCount := CountBytes(input)
-		lineCount := CountLines(input)
-		wordCount := CountWords(input)
-		println(lineCount, wordCount, byteCount)
+		return Results{
+			Bytes:      CountBytes(input),
+			Lines:      CountLines(input),
+			Words:      CountWords(input),
+			Characters: CountCharacters(input),
+		}
 	}
 }
 
