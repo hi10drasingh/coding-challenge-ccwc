@@ -21,12 +21,13 @@ func TestProcess(t *testing.T) {
 
 	tests := []struct {
 		name    string
-		options map[string]bool
+		options Options
 	}{
-		{"count bytes", map[string]bool{"-c": true}},
-		{"count lines", map[string]bool{"-l": true}},
-		{"count words", map[string]bool{"-w": true}},
-		{"no options", map[string]bool{}},
+		{"count bytes", Options{CountBytes: true}},
+		{"count lines", Options{CountLines: true}},
+		{"count words", Options{CountWords: true}},
+		{"count characters", Options{CountCharacters: true}},
+		{"no options", Options{}},
 	}
 
 	for _, tt := range tests {
@@ -48,6 +49,7 @@ func TestCountBytes(t *testing.T) {
 		{"empty string", "", 0},
 		{"whitespace", "   ", 3},
 		{"unicode", "こんにちは", 15}, // Each Japanese character is 3 bytes in UTF-8
+		{"emoji", "😊", 4},        // Emoji is 4 bytes in UTF-8
 	}
 
 	for _, tt := range tests {
@@ -103,6 +105,29 @@ func TestCountWords(t *testing.T) {
 			got := CountWords(tt.input)
 			if got != tt.want {
 				t.Errorf("CountWords(%q) = %d; want %d", tt.input, got, tt.want)
+			}
+		})
+	}
+}
+
+func TestCountCharacters(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+		want  int
+	}{
+		{"normal string", "Hello, World!", 13},
+		{"empty string", "", 0},
+		{"whitespace", "   ", 3},
+		{"unicode", "こんにちは", 5},
+		{"emoji", "Hello 😊", 7},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := CountCharacters(tt.input)
+			if got != tt.want {
+				t.Errorf("CountCharacters(%q) = %d; want %d", tt.input, got, tt.want)
 			}
 		})
 	}

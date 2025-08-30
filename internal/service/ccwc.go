@@ -5,7 +5,14 @@ import (
 	"unicode"
 )
 
-func Process(filePath string, options map[string]bool) {
+type Options struct {
+	CountBytes      bool
+	CountLines      bool
+	CountWords      bool
+	CountCharacters bool
+}
+
+func Process(filePath string, options Options) {
 	data, err := os.ReadFile(filePath)
 	if err != nil {
 		panic(err)
@@ -14,20 +21,27 @@ func Process(filePath string, options map[string]bool) {
 	input := string(data)
 
 	switch {
-	case options["-c"]:
+	case options.CountBytes:
 		byteCount := CountBytes(input)
 		println(byteCount)
 
-	case options["-l"]:
+	case options.CountLines:
 		lineCount := CountLines(input)
 		println(lineCount)
 
-	case options["-w"]:
+	case options.CountWords:
 		wordCount := CountWords(input)
 		println(wordCount)
 
+	case options.CountCharacters:
+		charCount := CountCharacters(input)
+		println(charCount)
+
 	default:
-		println("No valid option provided.")
+		byteCount := CountBytes(input)
+		lineCount := CountLines(input)
+		wordCount := CountWords(input)
+		println(lineCount, wordCount, byteCount)
 	}
 }
 
@@ -65,4 +79,8 @@ func CountWords(input string) int {
 	}
 
 	return count
+}
+
+func CountCharacters(input string) int {
+	return len([]rune(input))
 }
