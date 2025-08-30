@@ -25,6 +25,7 @@ func TestProcess(t *testing.T) {
 	}{
 		{"count bytes", map[string]bool{"-c": true}},
 		{"count lines", map[string]bool{"-l": true}},
+		{"count words", map[string]bool{"-w": true}},
 		{"no options", map[string]bool{}},
 	}
 
@@ -78,6 +79,30 @@ func TestCountLines(t *testing.T) {
 			got := CountLines(tt.input)
 			if got != tt.want {
 				t.Errorf("CountLines(%q) = %d; want %d", tt.input, got, tt.want)
+			}
+		})
+	}
+}
+
+func TestCountWords(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+		want  int
+	}{
+		{"normal sentence", "Hello, World! This is a test.", 6},
+		{"multiple spaces", "Hello,   World!  This   is a test.", 6},
+		{"newlines and tabs", "Hello,\nWorld!\tThis is a test.", 6},
+		{"empty string", "", 0},
+		{"only spaces", "     ", 0},
+		{"only newlines", "\n\n\n", 0},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := CountWords(tt.input)
+			if got != tt.want {
+				t.Errorf("CountWords(%q) = %d; want %d", tt.input, got, tt.want)
 			}
 		})
 	}

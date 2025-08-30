@@ -24,6 +24,11 @@ func main() {
 				options["-l"] = true
 			}
 
+			countWords := cmd.Flags().Changed("count-words")
+			if countWords {
+				options["-w"] = true
+			}
+
 			service.Process(filePath, options)
 		},
 	}
@@ -32,6 +37,7 @@ func main() {
 
 	rootCmd.Flags().BoolP("count-bytes", "c", false, "Count the number of bytes in the file")
 	rootCmd.Flags().BoolP("count-lines", "l", false, "Count the number of lines in the file")
+	rootCmd.Flags().BoolP("count-words", "w", false, "Count the number of words in the file")
 
 	if err := rootCmd.Execute(); err != nil {
 		println(err.Error())
